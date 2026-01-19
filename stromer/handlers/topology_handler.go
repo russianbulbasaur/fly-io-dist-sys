@@ -24,6 +24,7 @@ func parseTopology(topology map[string]any, n *maelstrom.Node) {
 	if _, ok := topology[n.ID()]; !ok {
 		return
 	}
+
 	receivedNodesMap := make(map[string]bool)
 	nodesList := topology[n.ID()].([]any)
 	for _, node := range nodesList {
