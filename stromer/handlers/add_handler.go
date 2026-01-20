@@ -25,6 +25,7 @@ func NewAddHandler(n *maelstrom.Node, kv *maelstrom.KV) func(msg maelstrom.Messa
 				val = 0
 			}
 			if err = kv.CompareAndSwap(ctx, kvCounterKey, val, val+delta, true); err == nil {
+				cancel()
 				break
 			}
 			cancel()
