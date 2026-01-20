@@ -30,6 +30,12 @@ test3e: ./stromer
 	../../maelstrom/maelstrom test -w broadcast --bin stromer \
 	--node-count 25 --time-limit 20 --rate 100 --latency 100
 
+
+test4: ./stromer
+	../../maelstrom/maelstrom test -w g-counter --bin stromer \
+ 	--node-count 3 --rate 100 --time-limit 20 --nemesis partition
+
+
 serve:
 	../../maelstrom/maelstrom serve
 

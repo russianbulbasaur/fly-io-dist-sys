@@ -9,3 +9,5 @@ var messages = models.Messages{
 }
 
 var connectedNodes = make(map[string]*models.ConnectedNode)
+
+const kvCounterKey string = "counter"
