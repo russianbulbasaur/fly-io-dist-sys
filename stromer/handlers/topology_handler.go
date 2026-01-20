@@ -21,27 +21,21 @@ func NewTopologyHandler(n *maelstrom.Node) func(msg maelstrom.Message) error {
 }
 
 func parseTopology(topology map[string]any, n *maelstrom.Node) {
-	if _, ok := topology[n.ID()]; !ok {
-		return
+	var nodesList []string
+	for key, _ := range topology {
+		if key == n.ID() {
+			continue
+		}
+		nodesList = append(nodesList, key)
 	}
 
 	receivedNodesMap := make(map[string]bool)
-	nodesList := topology[n.ID()].([]any)
 	for _, node := range nodesList {
-		receivedNodesMap[node.(string)] = true
+		receivedNodesMap[node] = true
 	}
 
 	connectedNodes.mu.Lock()
 	defer connectedNodes.mu.Unlock()
-
-	// check for dead nodes
-	for id, node := range connectedNodes.connectedNodes {
-		if _, exists := receivedNodesMap[id]; !exists {
-			node.Stop()
-			delete(connectedNodes.connectedNodes, id)
-			continue
-		}
-	}
 
 	// new nodes
 	for id, _ := range receivedNodesMap {

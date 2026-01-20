@@ -20,4 +20,5 @@ func setupHandlers(n *maelstrom.Node) {
 	n.Handle("broadcast", handlers.NewBroadcastHandler(n))
 	n.Handle("read", handlers.NewReadHandler(n))
 	n.Handle("topology", handlers.NewTopologyHandler(n))
+	n.Handle("gossip", handlers.NewGossipHandler(n))
 }
