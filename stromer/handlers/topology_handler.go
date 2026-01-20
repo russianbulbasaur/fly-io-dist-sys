@@ -34,16 +34,13 @@ func parseTopology(topology map[string]any, n *maelstrom.Node) {
 		receivedNodesMap[node] = true
 	}
 
-	connectedNodes.mu.Lock()
-	defer connectedNodes.mu.Unlock()
-
 	// new nodes
 	for id, _ := range receivedNodesMap {
-		if _, exists := connectedNodes.connectedNodes[id]; !exists {
+		if _, exists := connectedNodes[id]; !exists {
 			// spin new node
 			node := models.NewConnectedNode(id, n)
 			go node.StartSyncing()
-			connectedNodes.connectedNodes[id] = node
+			connectedNodes[id] = node
 		}
 	}
 }

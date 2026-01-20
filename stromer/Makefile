@@ -22,6 +22,14 @@ test3c: ./stromer
 	../../maelstrom/maelstrom test -w broadcast --bin stromer \
 	--node-count 5 --time-limit 20 --rate 10 --nemesis partition
 
+test3d: ./stromer
+	../../maelstrom/maelstrom test -w broadcast --bin stromer \
+	--node-count 25 --time-limit 20 --rate 100 --latency 100
+
+test3e: ./stromer
+	../../maelstrom/maelstrom test -w broadcast --bin stromer \
+	--node-count 25 --time-limit 20 --rate 100 --latency 100
+
 serve:
 	../../maelstrom/maelstrom serve
 

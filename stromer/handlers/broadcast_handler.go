@@ -13,22 +13,25 @@ func NewBroadcastHandler(n *maelstrom.Node) func(msg maelstrom.Message) error {
 			return err
 		}
 
-		messages.Mu.Lock()
-		if !messages.Messages[body["message"]] {
-			messages.Messages[body["message"]] = true
-			connectedNodes.mu.Lock()
-			for _, node := range connectedNodes.connectedNodes {
-				if node.ID == msg.Src {
-					continue
-				}
-				node.NewMessage(body["message"])
-			}
-			connectedNodes.mu.Unlock()
-		}
-		messages.Mu.Unlock()
-
+		message := int(body["message"].(float64))
 		delete(body, "message")
 		body["type"] = "broadcast_ok"
+
+		messages.Mu.Lock()
+		messages.Messages = append(messages.Messages, message)
+		messages.Mu.Unlock()
+
+		go gossip(msg.Src, message)
+
 		return n.Reply(msg, body)
+	}
+}
+
+func gossip(src string, message int) {
+	for _, node := range connectedNodes {
+		if node.ID == src {
+			continue
+		}
+		node.NewMessage(message)
 	}
 }

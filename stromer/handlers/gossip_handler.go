@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 )
@@ -14,13 +13,14 @@ func NewGossipHandler(n *maelstrom.Node) func(msg maelstrom.Message) error {
 			return err
 		}
 
+		body["type"] = "gossip_ok"
+		message := int(body["message"].(float64))
+		delete(body, "message")
+
 		messages.Mu.Lock()
-		messages.Messages[body["message"]] = true
-		log.Println(messages.Messages)
+		messages.Messages = append(messages.Messages, message)
 		messages.Mu.Unlock()
 
-		delete(body, "message")
-		body["type"] = "gossip_ok"
 		return n.Reply(msg, body)
 	}
 }

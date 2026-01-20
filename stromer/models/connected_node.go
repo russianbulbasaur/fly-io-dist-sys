@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
@@ -12,14 +11,16 @@ import (
 type ConnectedNode struct {
 	ID                 string
 	node               *maelstrom.Node
-	newMessagesChannel chan any
+	newMessagesChannel chan int
+	ticker             *time.Ticker
 }
 
 func NewConnectedNode(id string, node *maelstrom.Node) *ConnectedNode {
 	return &ConnectedNode{
 		id,
 		node,
-		make(chan any, 1000),
+		make(chan int, 1000),
+		time.NewTicker(time.Second * 1),
 	}
 }
 
@@ -27,7 +28,6 @@ func (cNode *ConnectedNode) StartSyncing() {
 	for {
 		select {
 		case message := <-cNode.newMessagesChannel:
-			log.Println("sending ", message)
 			body := make(map[string]any)
 			body["type"] = "gossip"
 			body["message"] = message
@@ -40,13 +40,14 @@ func (cNode *ConnectedNode) StartSyncing() {
 			if err := json.Unmarshal(msg.Body, &body1); err != nil {
 				cNode.newMessagesChannel <- message
 			}
-			if body["type"] != "gossip_ok" {
+			if body1["type"] != "gossip_ok" {
 				cNode.newMessagesChannel <- message
 			}
+		default:
 		}
 	}
 }
 
-func (cNode *ConnectedNode) NewMessage(message any) {
+func (cNode *ConnectedNode) NewMessage(message int) {
 	cNode.newMessagesChannel <- message
 }
